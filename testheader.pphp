@@ -1,0 +1,7 @@
+<!doctype html>
+<html>
+<?pphp
+__server__.send_response(303)
+__server__.send_header('Location', '/')
+?>
+</html>

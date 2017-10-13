@@ -1,0 +1,17 @@
+* {
+        background-color: black;
+        color: white;
+        font-family: Courier New, monospace;
+}
+html {
+	margin: 0;
+	padding: 0;
+}
+input, td, table, th {
+        border: 2px solid white;
+        border-radius: 5px;
+        padding: 2px;
+}
+table {
+	border-collapse: collapse;
+}

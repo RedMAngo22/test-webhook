@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+	<title>Admin Home</title>
+	<link rel="stylesheet" href="/stylesheet.css" />
+</head>
+<body>
+<h1>Admin Home</h1>
+<form id="form" action="<?pphp echo(_SERVER['PPHP_SELF']) ?>" method="POST">
+<input type="text" name="name" placeholder="Filename" value="<?pphp echo(_POST.get('name', [''])[0]) ?>" />
+<input type="radio" name="action" value="write" id="write" /><label for="write">Write to file</label>
+<input type="radio" name="action" value="delete" id="delete" /><label for="delete">Delete file</label>
+<textarea name="text" cols="100" rows="25" style="display:block"><?pphp echo(_POST.get('text', [''])[0], False) ?></textarea>
+<input type="password" name="pass" placeholder="Admin password" />
+<input type="submit" value="Do it" />
+</form>
+<hr/>
+<?pphp
+if _SERVER['REQUEST_METHOD'] == 'POST' and _POST.get('pass', [''])[0] == 'dontdoit':
+	if _POST['action'][0] == 'write':
+		try:
+			with open(__server__.root+'/'+_POST['name'][0], 'w') as f:
+				f.write(_POST['text'][0])
+				echo('<p>Write success</p>', False)
+		except IOError:
+			echo('<p>Write failed</p>', False)
+	elif _POST['action'][0] == 'delete':
+		import os
+		try: os.remove(__server__.root+'/'+_POST['name'][0]); echo('<p>File successfully removed</p>', False)
+		except IOError: echo('<p>File does not exist</p>', False)
+else:
+	echo('<p>No results yet</p>', False)
+?>
+</body>
+</html>

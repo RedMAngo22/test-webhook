@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Database Test</title>
+		<link rel="stylesheet" href="stylesheet.css"/>
+		<script>
+function RadioChange(v) {
+	if (v == "update") {
+		document.getElementById('value').style.display = "block";
+	} else {
+		document.getElementById('value').style.display = "none";
+	}
+}
+		</script>
+	</head>
+	<body>
+		<h1>Database Test</h1>
+		<form action="<?pphp echo(_SERVER['PPHP_SELF']) ?>" method="POST">
+		<input value="<?pphp echo(_REQUEST.get('key', [''])[0]) ?>" id="key" type="text" placeholder="Database item" name="key"/>
+		<input type="checkbox" name="regex" <?pphp echo('checked' * ('regex' in _REQUEST)) ?> id="regex"/><label for="regex">Regex</label>
+		<br/>
+		<input onclick="RadioChange(this.value);" type="radio" name="action" value="get" id="get" checked/><label for="get">Get value</label>
+		<input onclick="RadioChange(this.value);" type="radio" name="action" value="update" id="update"/><label for="update">Update value</label>
+		<input onclick="RadioChange(this.value);" type="radio" name="action" value="remove" id="remove"/><label for="remove">Remove key</label>
+		<br/>
+		<input id="value" type="text" placeholder="Value for item" name="value" style="display:none"/>
+		<br/>
+		<input type="submit" value="Do it"/>
+		</form>
+		<table><tr><th>Key</th><th>Value</th><th>Status</th></tr>
+<?pphp
+echo('<h1>Result</h1>')
+if _SERVER['REQUEST_METHOD'] == 'POST':
+	if _REQUEST['action'][0] == 'get':
+		if 'regex' in _REQUEST:
+			import re
+			found = False
+			for k in __db__:
+				if re.match(_REQUEST['key'][0], k):
+					echo('<tr><td>' + k + '</td><td>' + __db__[k] + '</td><td>200</td></tr>')
+					found = True
+			if not found:
+				echo('<tr><td>' + _REQUEST['key'][0] + '</td><td>&lt;Not found&gt;</td><td>404</td></tr>')
+		else:
+			try: echo('<tr><td>' + _REQUEST['key'][0] + '</td><td>' + __db__[_REQUEST['key'][0]] + '</td><td>200</td></tr>')
+			except KeyError: echo('<tr><td>' + _REQUEST['key'][0] + '</td><td>&lt;Not found&gt;</td><td>404</td></tr>')
+	elif _REQUEST['action'][0] == 'update':
+		__db__[_REQUEST['key'][0]] = _REQUEST['value'][0]
+		echo('<tr><td>' + _REQUEST['key'][0] + '</td><td>Updated to ' + _REQUEST['value'][0] + '</td><td>200</td></tr>')
+	else:
+		try: del __db__[_REQUEST['key'][0]]
+		except KeyError: pass
+		finally: echo('<tr><td>' + _REQUEST['key'][0] + '</td><td>&lt;removed&gt;</td><td>200</td</tr>')
+else:
+	echo('<p>No results yet</p>')
+?>
+	</body>
+</html>
